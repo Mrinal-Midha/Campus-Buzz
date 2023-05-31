@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatBoy - Signup</title>
+  <link rel="stylesheet" type="text/css" href="sign_up.css">
+  <script>
+    function validateEmail() {
+      var emailInput = document.getElementById("email");
+      var emailValue = emailInput.value;
+      var isValid = emailValue.endsWith("@bmsit.in");
+
+      if (!isValid) {
+        alert("Please enter a valid @bmsit.in email address.");
+        emailInput.value = "";
+        emailInput.focus();
+        return false;
+      }
+      
+      return true;
+    }
+
+    function validatePassword() {
+      var passwordInput = document.getElementById("password");
+      var confirmPasswordInput = document.getElementById("confirmPassword");
+      var passwordValue = passwordInput.value;
+      var confirmPasswordValue = confirmPasswordInput.value;
+
+      if (passwordValue !== confirmPasswordValue) {
+        alert("Password and Confirm Password should match.");
+        confirmPasswordInput.value = "";
+        confirmPasswordInput.focus();
+        return false;
+      }
+
+      if (passwordValue.length < 8) {
+        alert("Password should be at least 8 characters long.");
+        passwordInput.value = "";
+        confirmPasswordInput.value = "";
+        passwordInput.focus();
+        return false;
+      }
+
+      var hasUpperCase = /[A-Z]/.test(passwordValue);
+      var hasDigit = /\d/.test(passwordValue);
+      var hasSpecialChar = /[!@#$%^&*]/.test(passwordValue);
+
+      if (!hasUpperCase || !hasDigit || !hasSpecialChar) {
+        alert("Password should contain at least one uppercase letter, one digit, and one special character (!@#$%^&*).");
+        passwordInput.value = "";
+        confirmPasswordInput.value = "";
+        passwordInput.focus();
+        return false;
+      }
+      
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>Create your account</h2>
+    <h5>Please note that email verification is required for signup. Your email will only be used to verify your identity for security purposes.</h5>
+    <form onsubmit="return validateEmail() && validatePassword()" action="register.php" method="post">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Submit">
+      </div>
+    </form>
+    <script>
+      var form = document.querySelector("form");
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        var isValid = validateEmail() && validatePassword();
+        if (isValid) {
+          form.submit();
+        }
+      });
+    </script>
+  </div>
+</body>
+</html>
