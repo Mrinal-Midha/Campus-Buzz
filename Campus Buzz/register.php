@@ -1,14 +1,10 @@
 <?php
+require_once __DIR__ . '/config.php';
+
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$servername = "localhost";
-$username = "chat";
-$dbPassword = "Buzz@321";
-$dbname = "king";
-
-
-$conn = new mysqli($servername, $username, $dbPassword, $dbname);
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
 // Check connection
 if ($conn->connect_error) {
@@ -28,18 +24,18 @@ function sendMail($email,$v_code)
 
   try {
     //Server settings
-    $mail->isSMTP();                                          
-    $mail->Host       = 'smtp.gmail.com';                   
-    $mail->SMTPAuth   = true;                                   
-    $mail->Username   = 'campusbuzz24@gmail.com';               
-    $mail->Password   = 'tfavhewxflgfjdfc';                               //BMSITM@#$$#@
-    $mail->SMTPSecure = 'ssl';      
-    $mail->Port       = 465;                                  
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = SMTP_USERNAME;
+    $mail->Password   = SMTP_PASSWORD;
+    $mail->SMTPSecure = 'ssl';
+    $mail->Port       = 465;
 
-    $mail->setFrom('campusbuzz24@gmail.com', 'Campus_Buzz');
-    $mail->addAddress($email);  
+    $mail->setFrom(SMTP_USERNAME, 'Campus_Buzz');
+    $mail->addAddress($email);
 
-    $mail->isHTML(true);        
+    $mail->isHTML(true);
     $mail->Subject = 'Email Verification from Campus Buzz';
     $mail->Body    = "Thanks for registeration!
     Click the link below to verify the email address
@@ -53,10 +49,12 @@ function sendMail($email,$v_code)
     }
 }
 
-
 // Check if the email already exists in the database
-$checkEmailQuery = "SELECT email FROM userinformation WHERE email = '$email'";
-$checkEmailResult = $conn->query($checkEmailQuery);
+$checkEmailQuery = "SELECT email FROM userinformation WHERE email = ?";
+$checkEmailStmt = $conn->prepare($checkEmailQuery);
+$checkEmailStmt->bind_param("s", $email);
+$checkEmailStmt->execute();
+$checkEmailResult = $checkEmailStmt->get_result();
 
 if ($checkEmailResult->num_rows > 0) {
   $conn->close();
@@ -65,14 +63,16 @@ if ($checkEmailResult->num_rows > 0) {
 }
 $v_code = bin2hex(random_bytes(16));
 // Insert the user information into the database
-$sql = "INSERT INTO userinformation (email, password, `verification_code`, `is_verify`) VALUES ('$email', '$password','$v_code','0')";
+$sql = "INSERT INTO userinformation (email, password, `verification_code`, `is_verify`) VALUES (?, ?, ?, '0')";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sss", $email, $password, $v_code);
 
-if (($conn->query($sql) === TRUE) && sendMail($_POST['email'],$v_code)){
+if (($stmt->execute()) && sendMail($_POST['email'],$v_code)){
   $conn->close();
   header("Location: index.html");
   exit();
 } else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
+  echo "Error: " . $conn->error;
 }
 
 $conn->close();
