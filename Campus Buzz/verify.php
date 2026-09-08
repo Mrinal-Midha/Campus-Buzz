@@ -1,11 +1,8 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "chat";
-$dbPassword = "Buzz@321";
-$dbname = "king";
+require_once __DIR__ . '/config.php';
 
-$con = mysqli_connect($servername, $username, $dbPassword, $dbname);
+// Database connection
+$con = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if (mysqli_connect_errno()) {
     echo "Failed to connect to MySQL: " . mysqli_connect_error();
     exit();
