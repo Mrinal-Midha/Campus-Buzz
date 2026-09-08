@@ -1,14 +1,11 @@
 <?php
+require_once __DIR__ . '/config.php';
+
 if (isset($_POST['email']) && isset($_POST['password'])) {
   $email = $_POST['email'];
   $password = $_POST['password'];
 
-  $servername = "localhost";
-  $username = "chat";
-  $dbPassword = "Buzz@321";
-  $dbname = "king";
-
-  $conn = new mysqli($servername, $username, $dbPassword, $dbname);
+  $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
